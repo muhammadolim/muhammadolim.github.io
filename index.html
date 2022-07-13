@@ -15,6 +15,10 @@
 </head>
 
 <body>
+    <div id="container-spinner" class="container-fluid">
+        <p class="spinner" id="spinner"><i class="fas fa-spinner fa-5x"></i></p>
+    </div>
+
     <div class="container-fluid header">
         <div class="row" style="background-color: black; color: white;">
             <div class="col-12">
@@ -56,10 +60,10 @@
         <div class="row categories">
             <div class="col-12 d-flex justify-content-center nav-tabs">
                 <button class="nav-link active" type="button active" data-filter="all"
-                    onclick="playCards()">All</button>
-                <button class="nav-link" type="button" data-filter=".category-1" onclick="playCards()">React</button>
-                <button class="nav-link" type="button" data-filter=".category-2" onclick="playCards()">JS</button>
-                <button class="nav-link" type="button" data-filter=".category-3" onclick="playCards()">Websites</button>
+                    onclick="play()">All</button>
+                <button class="nav-link" type="button" data-filter=".category-1" onclick="play()">React</button>
+                <button class="nav-link" type="button" data-filter=".category-2" onclick="play()">JS</button>
+                <button class="nav-link" type="button" data-filter=".category-3" onclick="play()">Websites</button>
             </div>
         </div>
         <div class="row projects">
@@ -102,15 +106,18 @@
 
     </div>
 
+
+
+
     <script src="js/mixitup.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/card.js"></script>
     <script>
-        function playCards() {
-            document.getElementById("audio-cards").cloneNode(true).play();
+        function play() {
+            document.getElementById("audio").cloneNode(true).play();
         }
     </script>
-    <audio id="audio-cards" src="audio/interface-click.wav"></audio>
+    <audio id="audio" src="audio/interface-click.wav"></audio>
     <script src="js/script.js"></script>
 </body>
 
