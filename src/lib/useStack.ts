@@ -16,7 +16,7 @@ export function useStack() {
   const [active, setActive] = useState('top')
 
   useEffect(() => {
-    const screens = [...document.querySelectorAll<HTMLElement>('.screen')]
+    let screens = [...document.querySelectorAll<HTMLElement>('.screen')]
     const lenis = new Lenis({ lerp: 0.1, autoRaf: true })
     let starts: number[] = []
     let heights: number[] = []
@@ -48,7 +48,8 @@ export function useStack() {
       })
       if (now !== current) {
         current = now
-        screens[now].classList.add('is-active')
+        // every screen up to this one has been seen (also covers screens swapped in later)
+        screens.slice(0, now + 1).forEach((s) => s.classList.add('is-active'))
         setActive(screens[now].id)
       }
     }
@@ -92,6 +93,19 @@ export function useStack() {
 
     const ro = new ResizeObserver(measure)
     screens.forEach((s) => ro.observe(s))
+    // If a section is replaced (e.g. live reload while developing), pick up the new one.
+    const mo = new MutationObserver(() => {
+      const now = [...document.querySelectorAll<HTMLElement>('.screen')]
+      if (now.length === screens.length && now.every((s, i) => s === screens[i])) return
+      ro.disconnect()
+      screens = now
+      covers = []
+      current = -1
+      screens.forEach((s) => ro.observe(s))
+      measure()
+    })
+    const main = document.querySelector('main')
+    if (main) mo.observe(main, { childList: true })
     addEventListener('resize', measure)
     document.addEventListener('click', onClick)
     measure()
@@ -102,6 +116,7 @@ export function useStack() {
 
     return () => {
       ro.disconnect()
+      mo.disconnect()
       clearTimeout(timer)
       removeEventListener('resize', measure)
       document.removeEventListener('click', onClick)

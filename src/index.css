@@ -102,31 +102,34 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
 .hero-index-arrow { position: absolute; top: 12px; right: 16px; font-size: 26px; font-weight: 700; transition: translate 180ms var(--ease); }
 .hero-index a:hover .hero-index-arrow { translate: 0 4px; }
 
-/* stickers: die-cut look (white edge + soft shadow), draggable */
+/* stickers: numbers and logos only, die-cut look (white edge + soft shadow), draggable */
+.hero { overflow-x: clip; } /* dragged stickers never cause sideways scrolling */
 .hero .screen-inner { position: relative; }
 .stickers { position: absolute; inset: var(--bar) 0 0; z-index: 2; pointer-events: none; }
 .sticker {
   position: absolute; left: var(--x); top: var(--y);
   display: grid; place-items: center;
-  padding: 10px 16px 7px;
-  background: var(--c); color: var(--ink);
-  border: 2px solid var(--ink);
-  box-shadow: 0 0 0 5px var(--paper), 4px 6px 10px 5px rgba(0, 0, 0, 0.18);
-  font: 700 18px/1.05 var(--text); text-align: center; white-space: pre-line;
   rotate: var(--r);
   cursor: grab; touch-action: none; user-select: none; pointer-events: auto;
-  transition: scale 200ms var(--ease), rotate 300ms var(--ease), box-shadow 200ms var(--ease);
+  transition: scale 200ms var(--ease), rotate 300ms var(--ease);
   animation: slap 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   animation-delay: calc(700ms + var(--i) * 90ms);
 }
 .sticker:hover { scale: 1.05; }
-.sticker.is-dragging { cursor: grabbing; scale: 1.1; rotate: 0deg; box-shadow: 0 0 0 5px var(--paper), 10px 16px 24px 6px rgba(0, 0, 0, 0.22); }
-.sticker-pill { border-radius: 999px; padding-inline: 20px; }
-.sticker-badge { width: 118px; aspect-ratio: 1; border-radius: 50%; font-size: 17px; padding: 6px 10px 2px; }
-.sticker-burst {
-  width: 140px; aspect-ratio: 1; padding: 6px 18px 2px; font-size: 16px; border: 0;
-  clip-path: polygon(50% 0%, 61% 11%, 75% 6%, 79% 21%, 94% 25%, 89% 39%, 100% 50%, 89% 61%, 94% 75%, 79% 79%, 75% 94%, 61% 89%, 50% 100%, 39% 89%, 25% 94%, 21% 79%, 6% 75%, 11% 61%, 0% 50%, 11% 39%, 6% 25%, 21% 21%, 25% 6%, 39% 11%);
+.sticker.is-dragging { cursor: grabbing; scale: 1.1; rotate: 0deg; }
+
+/* die-cut in the shape of the logo itself: the white edge follows the logo (and number) outline */
+.sticker-cut {
+  gap: 2px;
+  filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)
+    drop-shadow(4px 6px 6px rgba(0, 0, 0, 0.22));
 }
+.sticker-cut b { font: 400 36px/0.9 var(--display); letter-spacing: 0.01em; padding-top: 3px; color: var(--ink); }
+.sticker.is-dragging.sticker-cut { filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.25)); }
+.sticker-emblem { width: 92px; pointer-events: none; }
+.sticker-github { color: var(--ink); }
+.sticker-claude { color: #d97757; }
+
 @keyframes slap { from { opacity: 0; scale: 1.5; rotate: calc(var(--r) - 14deg); } }
 
 /* ---------- work ---------- */
@@ -235,10 +238,11 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
   .hero-index a { grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; padding: 12px 14px 10px; }
   .hero-index-title { font-size: 36px; }
   .hero-index-blurb { grid-column: 2; }
-  .sticker { left: var(--mx); top: var(--my); font-size: 15px; padding: 8px 12px 5px; }
-  .sticker.no-mobile { display: none; }
-  .sticker-badge { width: 92px; font-size: 14px; }
-  .sticker-burst { width: 112px; font-size: 13px; }
+  .sticker { left: var(--mx); top: var(--my); }
+  .sticker-emblem { width: 64px; }
+  .sticker-cut b { font-size: 26px; }
+  .sticker-github .icon { width: 60px; height: 60px; }
+  .sticker-claude svg { width: 76px; height: 76px; }
   .projects { gap: 14px; }
   .project-bar { padding: 10px 10px 7px; }
   .project h3 { font-size: 15px; }

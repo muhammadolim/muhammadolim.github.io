@@ -1,34 +1,61 @@
-import { useRef } from 'react'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { useRef, type ReactNode } from 'react'
 import github from '../data/github.json'
 import steam from '../data/steam.json'
+import { ClaudeLogo } from './ClaudeLogo'
+import { Icon } from './Icon'
 
+const BASE = import.meta.env.BASE_URL
 const fmt = (n: number) => n.toLocaleString('en-US')
+const compact = (n: number) => Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
+
+// ---- the numbers behind the stickers (all real data) ----
+const dotaGame = steam?.top.find((g) => g.appid === 570)
+const allContributions = github.years.reduce((a, y) => a + y.total, 0)
 const since = new Date(github.user.since).getFullYear()
-const topGame = steam?.top[0]
 
 type Sticker = {
-  label: string
-  shape: 'rect' | 'pill' | 'badge' | 'burst'
-  color: string
-  ink?: string
-  // position (percent of the intro) and tilt; m* is for phones, mobile: false hides it there
-  x: number; y: number; r: number
-  mx?: number; my?: number; mobile?: boolean
+  key: string
+  title: string // shown on hover; the sticker itself has no words
+  className: string
+  body: ReactNode
+  // position (percent of the intro) and tilt; m* is for phones
+  x: number; y: number; r: number; mx: number; my: number
 }
 
 const STICKERS: Sticker[] = [
-  { label: 'Web developer', shape: 'rect', color: '#ffd84d', x: 58, y: 46, r: -5, mx: 4, my: 27 },
-  { label: 'React', shape: 'pill', color: '#61dbfb', x: 79, y: 52, r: 8, mx: 64, my: 26 },
-  { label: 'JavaScript', shape: 'rect', color: '#f0db4f', x: 66, y: 60, r: 3, mobile: false },
-  { label: 'Vue', shape: 'pill', color: '#41b883', x: 90, y: 63, r: -9, mx: 6, my: 44 },
-  ...(topGame
-    ? [{ label: `${fmt(Math.round(topGame.hours))} h\n${topGame.name}`, shape: 'badge', color: '#ff7b5c', x: 84, y: 22, r: 12, mx: 66, my: 36 } as Sticker]
+  ...(dotaGame
+    ? [{
+        key: 'hours', title: `${fmt(Math.round(dotaGame.hours))} hours in Dota 2`, className: 'sticker-cut sticker-dota',
+        body: (
+          <>
+            <img className="sticker-emblem" src={`${BASE}stickers/dota2.webp`} alt="" draggable={false} />
+            <b>{fmt(Math.round(dotaGame.hours))}h</b>
+          </>
+        ),
+        x: 80, y: 27, r: -8, mx: 72, my: 26,
+      }]
     : []),
-  { label: `${fmt(github.years[0].total)} commits\nthis year`, shape: 'burst', color: '#00d87e', x: 48, y: 58, r: -8, mx: 30, my: 37 },
-  { label: `on GitHub\nsince ${since}`, shape: 'rect', color: '#000', ink: '#fff', x: 76, y: 70, r: -4, mobile: false },
+  {
+    key: 'commits', title: `${fmt(allContributions)} GitHub contributions since ${since}`, className: 'sticker-cut sticker-github',
+    body: (
+      <>
+        <Icon icon={faGithub} size={84} />
+        <b>{compact(allContributions)}</b>
+      </>
+    ),
+    x: 56, y: 52, r: 8, mx: 40, my: 40,
+  },
+  {
+    key: 'claude', title: 'Built with Claude Code', className: 'sticker-cut sticker-claude',
+    body: <ClaudeLogo size={110} />,
+    x: 20, y: 57, r: -6, mx: 4, my: 30,
+  },
 ]
 
-// Die-cut stickers slapped around the intro. Drag them anywhere; they stay where dropped.
+// Die-cut stickers in the shape of each logo, slapped around the intro: numbers and logos only
+// (hover for what they mean).
+// Drag them anywhere; they stay where dropped.
 export function Stickers() {
   const layer = useRef<HTMLDivElement>(null)
   const top = useRef(10)
@@ -36,16 +63,22 @@ export function Stickers() {
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = e.currentTarget
     const box = layer.current!.getBoundingClientRect()
-    const start = { x: e.clientX, y: e.clientY, left: el.offsetLeft, top: el.offsetTop }
+    // The drag is an offset (translate) on top of the CSS position, so the sticker still
+    // follows its percent / phone position when the window is resized or rotated.
+    const dx = Number(el.dataset.dx ?? 0)
+    const dy = Number(el.dataset.dy ?? 0)
+    const start = { x: e.clientX, y: e.clientY }
     el.setPointerCapture(e.pointerId)
     el.classList.add('is-dragging')
     el.style.zIndex = String(++top.current)
 
     const move = (ev: PointerEvent) => {
-      const left = Math.min(box.width - el.offsetWidth / 2, Math.max(-el.offsetWidth / 2, start.left + ev.clientX - start.x))
-      const topPx = Math.min(box.height - el.offsetHeight / 2, Math.max(-el.offsetHeight / 2, start.top + ev.clientY - start.y))
-      el.style.left = `${left}px`
-      el.style.top = `${topPx}px`
+      const clamp = (v: number, base: number, size: number, max: number) => Math.min(max - base - size / 2, Math.max(-base - size / 2, v))
+      const x = clamp(dx + ev.clientX - start.x, el.offsetLeft, el.offsetWidth, box.width)
+      const y = clamp(dy + ev.clientY - start.y, el.offsetTop, el.offsetHeight, box.height)
+      el.dataset.dx = String(x)
+      el.dataset.dy = String(y)
+      el.style.translate = `${x}px ${y}px`
     }
     const up = () => {
       el.classList.remove('is-dragging')
@@ -62,15 +95,15 @@ export function Stickers() {
     <div className="stickers" ref={layer} aria-hidden="true">
       {STICKERS.map((s, i) => (
         <div
-          key={s.label}
-          className={`sticker sticker-${s.shape}${s.mobile === false ? ' no-mobile' : ''}`}
+          key={s.key}
+          className={`sticker ${s.className}`}
+          title={s.title}
           onPointerDown={onPointerDown}
           style={{
-            '--x': `${s.x}%`, '--y': `${s.y}%`, '--mx': `${s.mx ?? s.x}%`, '--my': `${s.my ?? s.y}%`,
-            '--r': `${s.r}deg`, '--c': s.color, '--ink': s.ink ?? '#000', '--i': i,
+            '--x': `${s.x}%`, '--y': `${s.y}%`, '--mx': `${s.mx}%`, '--my': `${s.my}%`, '--r': `${s.r}deg`, '--i': i,
           } as React.CSSProperties}
         >
-          <span>{s.label}</span>
+          {s.body}
         </div>
       ))}
     </div>
