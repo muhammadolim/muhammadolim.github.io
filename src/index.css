@@ -98,7 +98,6 @@ main { position: relative; }
 .hero-line:last-child { margin-right: 0; }
 .hero-line > span { display: block; animation: rise-in 900ms var(--ease) both; animation-delay: calc(100ms + var(--i) * 90ms); }
 .hero-role b { color: var(--ink); }
-.hero-role span { display: block; } /* who I am, then what the page shows */
 .hero-role { max-width: 60ch; margin-top: 18px; font-size: clamp(20px, 2vw, 26px); font-weight: 600; line-height: 1.35; color: var(--muted); text-wrap: balance; animation: fade-up 700ms var(--ease) 300ms both; }
 
 .hero-index { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 18px; }
@@ -141,6 +140,9 @@ main { position: relative; }
 .sticker.is-dragging.sticker-cut { filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.25)); }
 .sticker-emblem { width: 92px; pointer-events: none; }
 .sticker-portrait { width: 210px; pointer-events: none; }
+/* the portrait has its own white border, so it only gets the shadow (a second outline left a seam) */
+.sticker.sticker-me { filter: drop-shadow(4px 6px 6px rgba(0, 0, 0, 0.22)); }
+.sticker.is-dragging.sticker-me { filter: drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.25)); }
 .sticker-github { color: var(--ink); }
 .sticker-claude { color: #d97757; }
 .sticker-monkeytype { color: #e2b714; }

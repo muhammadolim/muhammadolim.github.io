@@ -15,8 +15,7 @@ export function Hero() {
             ))}
           </h1>
           <p className="hero-role">
-            <span><b>Builder.</b> Product, code and science.</span>
-            <span>How much I code, what I play and listen to, and what I've built.</span>
+            <b>Builder.</b> Life is the longest project.
           </p>
         </div>
 
