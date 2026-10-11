@@ -1,10 +1,12 @@
+import type { IconDefinition } from '@fortawesome/free-brands-svg-icons'
 import type { ReactNode } from 'react'
 import { numberOf, SECTIONS } from '../data/sections'
 import { Footer } from './Footer'
+import { Icon } from './Icon'
 
-// One full-screen section: number, big title, an optional link, then the content.
+// One full-screen section: number, big title, optional links, then the content.
 // The last section also carries the footer.
-export function Screen({ id, link, children }: { id: string; link?: { href: string; label: string }; children: ReactNode }) {
+export function Screen({ id, links = [], children }: { id: string; links?: { href: string; label: string; icon?: IconDefinition; brand?: { bg: string; fg: string } }[]; children: ReactNode }) {
   const section = SECTIONS.find((s) => s.id === id)!
   return (
     <section className="screen" id={id} aria-labelledby={`${id}-title`} style={{ '--bg': section.color } as React.CSSProperties}>
@@ -12,11 +14,19 @@ export function Screen({ id, link, children }: { id: string; link?: { href: stri
         <header className="screen-head">
           <span className="screen-num" aria-hidden="true">{numberOf(id)}</span>
           <h2 id={`${id}-title`}>{section.title}</h2>
-          {link && (
-            <a className="more" href={link.href} target="_blank" rel="noopener">
+          {links.map((link) => (
+            <a
+              key={link.href}
+              className="more"
+              href={link.href}
+              target="_blank"
+              rel="noopener"
+              style={link.brand && ({ '--brand': link.brand.bg, '--brand-fg': link.brand.fg } as React.CSSProperties)}
+            >
+              {link.icon && <Icon icon={link.icon} size={18} />}
               {link.label} ↗
             </a>
-          )}
+          ))}
         </header>
         <div className="screen-body">{children}</div>
         {section === SECTIONS.at(-1) && <Footer />}

@@ -16,7 +16,7 @@ export function Header({ active }: { active: string }) {
       <ul className="bar-socials" aria-label="Socials">
         {SOCIALS.map((s) => (
           <li key={s.name}>
-            <a href={s.url} target="_blank" rel="noopener" aria-label={s.name} title={s.name}>
+            <a href={s.url} target="_blank" rel="noopener" aria-label={s.name} title={s.name} style={{ '--brand': s.color } as React.CSSProperties}>
               <Icon icon={s.icon} />
             </a>
           </li>

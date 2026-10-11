@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import yandexData from '../data/yandex.json'
+import spotifyData from '../data/spotify.json'
 import { fmt } from '../lib/format'
 
-type Song = { title: string; artists: string; url: string; cover: string | null; preview: string; liked: string }
-type YandexData = { profile: { url: string }; liked: number; recent: Song[] } | null
+type Song = { title: string; artists: string; url: string; cover: string | null; preview: string }
+type SpotifyData = { profile: { url: string }; liked: number; range: string; top: Song[] } | null
 
-const yandex = yandexData as YandexData
+const spotify = spotifyData as SpotifyData
 
-// Music card in "Play": songs liked lately on Yandex Music.
+// Music card in "Play": my most played songs on Spotify.
 // Tapping a song plays its 30-second preview; tapping it again pauses.
 export function Music() {
   const audio = useRef<HTMLAudioElement | null>(null)
   const [playing, setPlaying] = useState<string | null>(null)
 
   useEffect(() => () => audio.current?.pause(), [])
-  if (!yandex?.recent.length) return null
+  if (!spotify?.top.length) return null
 
   const toggle = (song: Song) => {
     const player = (audio.current ??= new Audio())
@@ -30,9 +30,9 @@ export function Music() {
 
   return (
     <div className="panel music">
-      <h3 className="card-head">Lately liked</h3>
+      <h3 className="card-head">Most played · {spotify.range}</h3>
       <ol className="music-list">
-        {yandex.recent.map((s) => {
+        {spotify.top.map((s) => {
           const on = playing === s.preview
           return (
             <li key={s.url}>
@@ -55,8 +55,7 @@ export function Music() {
         })}
       </ol>
       <p className="music-foot">
-        <b>{fmt(yandex.liked)}</b> liked songs on{' '}
-        <a href={yandex.profile.url} target="_blank" rel="noopener">Yandex Music ↗</a>
+        <b>{fmt(spotify.liked)}</b> liked songs on Spotify
       </p>
     </div>
   )

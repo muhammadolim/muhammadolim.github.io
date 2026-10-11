@@ -1,6 +1,5 @@
 import {
   faFacebook,
-  faGithub,
   faInstagram,
   faLinkedin,
   faTelegram,
@@ -9,11 +8,10 @@ import {
 
 export type Social = { name: string; handle: string; url: string; icon: IconDefinition; color: string }
 
-// Brand colors are lifted a little so they read on black.
+// color: the brand's own color (any CSS background), shown behind the icon on hover.
 export const SOCIALS: Social[] = [
-  { name: 'GitHub', handle: 'muhammadolim', url: 'https://github.com/muhammadolim', icon: faGithub, color: '#ffffff' },
-  { name: 'LinkedIn', handle: 'muhammad-olim', url: 'https://www.linkedin.com/in/muhammad-olim/', icon: faLinkedin, color: '#3d9cff' },
-  { name: 'Telegram', handle: '@MuhammadOlim', url: 'https://t.me/MuhammadOlim', icon: faTelegram, color: '#2aabee' },
-  { name: 'Instagram', handle: '@muhammad_mwd', url: 'https://www.instagram.com/muhammad_mwd/', icon: faInstagram, color: '#ff4f8b' },
-  { name: 'Facebook', handle: 'muhammad.olim.17', url: 'https://www.facebook.com/muhammad.olim.17', icon: faFacebook, color: '#4c8dff' },
+  { name: 'LinkedIn', handle: 'muhammad-olim', url: 'https://www.linkedin.com/in/muhammad-olim/', icon: faLinkedin, color: '#0a66c2' },
+  { name: 'Telegram', handle: '@MuhammadOlim', url: 'https://t.me/MuhammadOlim', icon: faTelegram, color: '#26a5e4' },
+  { name: 'Instagram', handle: '@muhammad_mwd', url: 'https://www.instagram.com/muhammad_mwd/', icon: faInstagram, color: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285aeb 90%)' },
+  { name: 'Facebook', handle: 'muhammad.olim.17', url: 'https://www.facebook.com/muhammad.olim.17', icon: faFacebook, color: '#0866ff' },
 ]

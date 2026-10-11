@@ -1,9 +1,10 @@
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { faGithub, faSpotify } from '@fortawesome/free-brands-svg-icons'
 import { useRef, type ReactNode } from 'react'
 import claudeData from '../data/claude.json'
 import github from '../data/github.json'
 import steam from '../data/steam.json'
 import monkeytype from '../data/monkeytype.json'
+import spotifyData from '../data/spotify.json'
 import { Logo } from './Logo'
 import { Icon } from './Icon'
 import { compact, fmt } from '../lib/format'
@@ -15,6 +16,9 @@ const dotaGame = steam?.top.find((g) => g.appid === 570)
 const allContributions = github.years.reduce((a, y) => a + y.total, 0)
 const since = new Date(github.user.since).getFullYear()
 const claude = claudeData as { tokens: number; tokensSince: string | null } | null
+// hours played on Spotify since the listening log started (shown from the first full hour)
+const listened = (spotifyData as { listened: { hours: number; since: string } | null } | null)?.listened
+const listenedHours = Math.floor(listened?.hours ?? 0)
 
 type Sticker = {
   key: string
@@ -75,6 +79,18 @@ const STICKERS: Sticker[] = [
     ),
     x: 64, y: 45, r: 5, mx: 4, my: 50,
   },
+  ...(listened && listenedHours >= 1
+    ? [{
+        key: 'spotify', title: `${fmt(listenedHours)} hours listened on Spotify since ${listened.since}`, className: 'sticker-cut sticker-spotify',
+        body: (
+          <>
+            <Icon icon={faSpotify} size={84} />
+            <b>{fmt(listenedHours)}h</b>
+          </>
+        ),
+        x: 6, y: 52, r: 7, mx: 24, my: -36,
+      }]
+    : []),
 ]
 
 // Die-cut stickers in the shape of each logo, slapped around the intro: numbers and logos only
