@@ -40,20 +40,29 @@ const server = createServer(async (req, res) => {
   const code = url.searchParams.get('code')
   if (!code) return done(`Spotify said: ${url.searchParams.get('error') ?? 'no code'}`)
 
+  try {
+    await saveToken(code)
+    done('Connected to Spotify. You can close this tab.')
+  } catch (e) {
+    done(`Couldn't finish the login: ${e.message}`)
+  }
+})
+
+// Trades the one-time code for a refresh token and saves it to .env.local.
+async function saveToken(code) {
   const token = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { Authorization: `Basic ${Buffer.from(`${id}:${secret}`).toString('base64')}`, 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: REDIRECT }),
   }).then((r) => r.json())
-  if (!token.refresh_token) return done(`Spotify said: ${token.error_description ?? token.error ?? 'no token'}`)
+  if (!token.refresh_token) throw new Error(`Spotify said: ${token.error_description ?? token.error ?? 'no token'}`)
 
   // replace an older token if there is one
   const env = (await readFile(ENV, 'utf8')).replace(/^SPOTIFY_REFRESH_TOKEN=.*\n?/m, '')
   await writeFile(ENV, env.endsWith('\n') || !env ? env : env + '\n')
   await appendFile(ENV, `SPOTIFY_REFRESH_TOKEN=${token.refresh_token}\n`)
   console.log('spotify-auth: saved SPOTIFY_REFRESH_TOKEN to .env.local')
-  done('Connected to Spotify. You can close this tab.')
-})
+}
 
 server.listen(8888, '127.0.0.1', () => {
   console.log(`spotify-auth: waiting for the Spotify login. If no page opened, open:\n${login}`)

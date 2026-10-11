@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # the Spotify step saves its listening log to the spotify-data branch
+  contents: read
   pages: write
   id-token: write
 
@@ -22,6 +22,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # the Spotify step saves its listening log to the spotify-data branch
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

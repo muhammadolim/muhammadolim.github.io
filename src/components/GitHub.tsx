@@ -1,5 +1,5 @@
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useEffect, useRef, useState } from 'react'
+import { BRANDS } from '../data/brands'
 import claudeData from '../data/claude.json'
 import github from '../data/github.json'
 import { useInView } from '../lib/useInView'
@@ -141,7 +141,7 @@ export function GitHub() {
   const year = source.years.find((y) => y.year === active) ?? source.years[0]
 
   return (
-    <Screen id="code" links={[{ href: `https://github.com/${github.user.login}`, label: 'GitHub', icon: faGithub, brand: { bg: '#181717', fg: '#fff' } }]}>
+    <Screen id="code" links={[{ href: `https://github.com/${github.user.login}`, label: 'GitHub', brand: BRANDS.github }]}>
       <div className="panel">
         <div className="heat-bar">
           {SOURCES.length > 1 && (

@@ -55,13 +55,17 @@ async function preview(title, artist) {
 }
 
 // The top songs that have a preview, so every song in the list can play.
-// Previews already found last time are reused, so a refresh only searches for new songs.
-async function songsWithPreview(tracks, known) {
+// Songs searched before (found or not) aren't searched again, so a refresh only searches new
+// songs and stays well under iTunes' rate limit. Songs without a preview are added to `missing`.
+async function songsWithPreview(tracks, known, missing) {
   const songs = []
   for (const track of tracks) {
     const url = track.external_urls.spotify
-    const audio = known.get(url) ?? (await preview(track.name, track.artists[0].name))
-    if (!audio) continue
+    const audio = known.has(url) ? known.get(url) : await preview(track.name, track.artists[0].name)
+    if (!audio) {
+      missing.add(url)
+      continue
+    }
     const images = track.album.images
     songs.push({
       title: track.name,
@@ -120,13 +124,17 @@ async function main() {
     return res.json()
   }
 
-  const known = new Map((saved?.top ?? []).map((x) => [x.url, x.preview]))
-  let range, top
-  for (range of RANGES) {
+  const known = new Map([...(saved?.noPreview ?? []).map((url) => [url, null]), ...(saved?.top ?? []).map((x) => [x.url, x.preview])])
+  const missing = new Set()
+  // the shortest range with a full list; failing that, whichever range filled the most
+  let best
+  for (const range of RANGES) {
     const { items } = await get(`/me/top/tracks?limit=${SONGS * 4}&time_range=${range.key}`)
-    top = await songsWithPreview(items, known)
+    const top = await songsWithPreview(items, known, missing)
+    if (!best || top.length > best.top.length) best = { range, top }
     if (top.length === SONGS) break
   }
+  const { range, top } = best
   const [me, liked] = await Promise.all([get('/me'), get('/me/tracks?limit=1')])
   const listened = await listening(get).catch((e) => {
     console.warn(`spotify: kept the saved listening time (${e.message})`)
@@ -140,6 +148,7 @@ async function main() {
     range: range.label,
     top,
     listened,
+    noPreview: [...missing],
   }
   await writeFile(OUT, JSON.stringify(out, null, 2) + '\n')
   console.log(`spotify: ${out.top.length} most played songs (${out.range}), ${out.liked} liked, ${listened ? `${listened.hours.toFixed(1)} h listened since ${listened.since}` : 'no listening time'}`)

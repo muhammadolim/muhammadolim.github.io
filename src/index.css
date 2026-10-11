@@ -80,10 +80,9 @@ main { position: relative; }
 .screen-head { display: flex; align-items: end; gap: 18px; border-bottom: var(--bw) solid var(--ink); padding-bottom: 6px; }
 .screen-num { font: 400 clamp(28px, 3vw, 40px) / 1 var(--display); padding: 6px 10px 2px; background: var(--ink); color: var(--bg); align-self: center; }
 .screen-head h2 { font: 400 clamp(60px, 9vw, 120px) / 0.82 var(--display); padding-top: 0.1em; margin-right: auto; }
+.more { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 8px 14px 5px; border: 2px solid var(--ink); background: var(--paper); white-space: nowrap; margin-bottom: 8px; transition: background-color 150ms ease-out, color 150ms ease-out; }
 .more + .more { margin-left: -8px; } /* links sit closer to each other than to the title */
-.more { font-weight: 700; padding: 8px 14px 5px; border: 2px solid var(--ink); background: var(--paper); white-space: nowrap; margin-bottom: 8px; transition: background-color 150ms ease-out, color 150ms ease-out; }
 .more:hover { background: var(--brand, var(--ink)); color: var(--brand-fg, var(--paper)); }
-.more { display: inline-flex; align-items: center; gap: 8px; }
 .more .icon { margin-top: -3px; } /* the label font sits low; center the logo on its letters */
 
 /* card look shared by panels and project tiles */
@@ -98,7 +97,9 @@ main { position: relative; }
 .hero-line { display: inline-block; overflow: hidden; padding-top: 0.06em; margin-right: 0.2em; vertical-align: top; }
 .hero-line:last-child { margin-right: 0; }
 .hero-line > span { display: block; animation: rise-in 900ms var(--ease) both; animation-delay: calc(100ms + var(--i) * 90ms); }
-.hero-role { max-width: 40ch; margin-top: 18px; font-size: clamp(20px, 2vw, 26px); font-weight: 600; line-height: 1.35; color: var(--muted); text-wrap: balance; animation: fade-up 700ms var(--ease) 300ms both; }
+.hero-role b { color: var(--ink); }
+.hero-role span { display: block; } /* who I am, then what the page shows */
+.hero-role { max-width: 60ch; margin-top: 18px; font-size: clamp(20px, 2vw, 26px); font-weight: 600; line-height: 1.35; color: var(--muted); text-wrap: balance; animation: fade-up 700ms var(--ease) 300ms both; }
 
 .hero-index { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 18px; }
 .hero-index a {

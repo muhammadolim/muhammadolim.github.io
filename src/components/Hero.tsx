@@ -14,7 +14,10 @@ export function Hero() {
               </span>
             ))}
           </h1>
-          <p className="hero-role">Web developer. What I build, how much I code and what I play.</p>
+          <p className="hero-role">
+            <span><b>Builder.</b> Product, code and science.</span>
+            <span>How much I code, what I play and listen to, and what I've built.</span>
+          </p>
         </div>
 
         <nav className="hero-index" aria-label="Sections">
