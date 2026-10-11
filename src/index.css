@@ -139,7 +139,7 @@ main { position: relative; }
 .sticker-cut b { font: 400 36px/0.9 var(--display); letter-spacing: 0.01em; padding-top: 3px; color: var(--ink); }
 .sticker.is-dragging.sticker-cut { filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.25)); }
 .sticker-emblem { width: 92px; pointer-events: none; }
-.sticker-portrait { width: 210px; pointer-events: none; }
+.sticker-portrait { width: 223px; pointer-events: none; }
 /* the portrait has its own white border, so it only gets the shadow (a second outline left a seam) */
 .sticker.sticker-me { filter: drop-shadow(4px 6px 6px rgba(0, 0, 0, 0.22)); }
 .sticker.is-dragging.sticker-me { filter: drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.25)); }
@@ -300,7 +300,7 @@ main { position: relative; }
   .hero-name { font-size: 15vw; }
   .sticker { left: var(--mx); top: var(--my); }
   .sticker-emblem { width: 56px; }
-  .sticker-portrait { width: 112px; }
+  .sticker-portrait { width: 119px; }
   .sticker-cut b { font-size: 24px; }
   .sticker-github .icon { width: 54px; height: 54px; }
   .sticker-claude svg { width: 64px; height: 64px; }
