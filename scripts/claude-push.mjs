@@ -40,8 +40,10 @@ if (args.includes('--hook')) {
   process.exit(0)
 }
 
+// Windows needs a shell only to find npx.cmd; through the shell, arguments with spaces (the
+// commit message) would be split apart.
 const run = (cmd, cmdArgs, cwd) =>
-  execFileSync(cmd, cmdArgs, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], shell: process.platform === 'win32', maxBuffer: 64 * 2 ** 20 })
+  execFileSync(cmd, cmdArgs, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], shell: process.platform === 'win32' && cmd === 'npx', maxBuffer: 64 * 2 ** 20 })
 const git = (...gitArgs) => run('git', gitArgs, dir)
 const localDate = (ms) => new Date(ms).toLocaleDateString('en-CA') // YYYY-MM-DD, local time like ccusage
 
