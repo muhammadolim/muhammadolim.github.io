@@ -48,7 +48,7 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
 .bar-links a[aria-current] { background: var(--ink); color: var(--paper); }
 .bar-socials { display: flex; gap: 2px; }
 .bar-socials a { display: grid; place-items: center; width: 38px; height: 38px; transition: background-color 150ms ease-out, color 150ms ease-out; }
-.bar-socials a:hover { background: var(--ink); color: var(--paper); }
+.bar-socials a:hover { background: var(--brand, var(--ink)); color: #fff; }
 
 /* ---------- screens ---------- */
 
@@ -80,8 +80,10 @@ main { position: relative; }
 .screen-head { display: flex; align-items: end; gap: 18px; border-bottom: var(--bw) solid var(--ink); padding-bottom: 6px; }
 .screen-num { font: 400 clamp(28px, 3vw, 40px) / 1 var(--display); padding: 6px 10px 2px; background: var(--ink); color: var(--bg); align-self: center; }
 .screen-head h2 { font: 400 clamp(60px, 9vw, 120px) / 0.82 var(--display); padding-top: 0.1em; margin-right: auto; }
-.more { font-weight: 700; padding: 8px 14px 5px; border: 2px solid var(--ink); background: var(--paper); white-space: nowrap; margin-bottom: 8px; transition: background-color 150ms ease-out, color 150ms ease-out; }
-.more:hover { background: var(--ink); color: var(--paper); }
+.more { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 8px 14px 5px; border: 2px solid var(--ink); background: var(--paper); white-space: nowrap; margin-bottom: 8px; transition: background-color 150ms ease-out, color 150ms ease-out; }
+.more + .more { margin-left: -8px; } /* links sit closer to each other than to the title */
+.more:hover { background: var(--brand, var(--ink)); color: var(--brand-fg, var(--paper)); }
+.more .icon { margin-top: -3px; } /* the label font sits low; center the logo on its letters */
 
 /* card look shared by panels and project tiles */
 .panel, .project { background: var(--paper); border: var(--bw) solid var(--ink); box-shadow: var(--shadow); }
@@ -95,7 +97,9 @@ main { position: relative; }
 .hero-line { display: inline-block; overflow: hidden; padding-top: 0.06em; margin-right: 0.2em; vertical-align: top; }
 .hero-line:last-child { margin-right: 0; }
 .hero-line > span { display: block; animation: rise-in 900ms var(--ease) both; animation-delay: calc(100ms + var(--i) * 90ms); }
-.hero-role { max-width: 40ch; margin-top: 18px; font-size: clamp(20px, 2vw, 26px); font-weight: 600; line-height: 1.35; color: var(--muted); text-wrap: balance; animation: fade-up 700ms var(--ease) 300ms both; }
+.hero-role b { color: var(--ink); }
+.hero-role span { display: block; } /* who I am, then what the page shows */
+.hero-role { max-width: 60ch; margin-top: 18px; font-size: clamp(20px, 2vw, 26px); font-weight: 600; line-height: 1.35; color: var(--muted); text-wrap: balance; animation: fade-up 700ms var(--ease) 300ms both; }
 
 .hero-index { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 18px; }
 .hero-index a {
@@ -140,6 +144,7 @@ main { position: relative; }
 .sticker-github { color: var(--ink); }
 .sticker-claude { color: #d97757; }
 .sticker-monkeytype { color: #e2b714; }
+.sticker-spotify { color: #1ed760; }
 
 @keyframes slap { from { opacity: 0; scale: 1.5; rotate: calc(var(--r) - 14deg); } }
 
@@ -187,9 +192,11 @@ main { position: relative; }
 .heat-bar .tabs { margin-bottom: 0; }
 .heat-grid .day { animation: pop 450ms var(--ease) both; animation-delay: calc(var(--c) * 9ms); }
 .heat:not(.is-in) .heat-grid .day { animation-play-state: paused; }
-.heat-grid .day:hover { outline: 2px solid var(--ink); outline-offset: 1px; }
+.heat-grid .day.is-hover { outline: 2px solid var(--ink); outline-offset: 1px; }
 .heat-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
 .heat-detail { color: var(--muted); font-variant-numeric: tabular-nums; }
+/* on phones the sentence may take two lines: keep room for both so the card doesn't jump */
+@media (max-width: 640px) { .heat-detail { min-height: 2lh; flex-basis: 100%; } }
 .heat-detail b { color: var(--ink); }
 .heat-legend { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--muted); }
 .heat-legend .day { width: 13px; margin-inline: 1px; }
@@ -296,6 +303,7 @@ main { position: relative; }
   .sticker-github .icon { width: 54px; height: 54px; }
   .sticker-claude svg { width: 64px; height: 64px; }
   .sticker-monkeytype svg { width: 58px; height: 58px; }
+  .sticker-spotify .icon { width: 54px; height: 54px; }
   .projects { gap: 14px; }
   .project-bar { padding: 10px 10px 7px; }
   .project h3 { font-size: 15px; }

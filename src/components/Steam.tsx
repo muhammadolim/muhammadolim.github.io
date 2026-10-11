@@ -1,4 +1,6 @@
+import { BRANDS } from '../data/brands'
 import steamData from '../data/steam.json'
+import spotify from '../data/spotify.json'
 import { useInView } from '../lib/useInView'
 import { Music } from './Music'
 import { Screen } from './Screen'
@@ -23,7 +25,7 @@ export function Steam() {
   const max = steam.top[0]?.hours ?? 1
 
   return (
-    <Screen id="play" link={{ href: steam.profile.url, label: 'Steam' }}>
+    <Screen id="play" links={[{ href: steam.profile.url, label: 'Steam', brand: BRANDS.steam }, { href: spotify.profile.url, label: 'Spotify', brand: BRANDS.spotify }]}>
       <div className="play-grid">
         <div className={'panel games' + (seen ? ' is-in' : '')} ref={ref}>
           <h3 className="card-head">Most played</h3>

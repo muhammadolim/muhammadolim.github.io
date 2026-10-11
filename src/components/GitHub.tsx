@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { BRANDS } from '../data/brands'
 import claudeData from '../data/claude.json'
 import github from '../data/github.json'
 import { useInView } from '../lib/useInView'
@@ -60,6 +61,8 @@ function Heatmap({ year, source }: { year: Year; source: Source }) {
   const [ref, seen] = useInView<HTMLDivElement>()
   const [hover, setHover] = useState<number | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
+  const leave = useRef(0)
+  useEffect(() => () => clearTimeout(leave.current), [])
   const start = new Date(year.start + 'T00:00:00Z')
   const offset = start.getUTCDay()
 
@@ -92,16 +95,23 @@ function Heatmap({ year, source }: { year: Year; source: Source }) {
           className="heat-grid"
           role="img"
           aria-label={`${source.label}: ${fmt(year.total)} in ${year.year}`}
+          // Off a cell (a gap, or the empty weeks still to come) the text returns to the year
+          // total after a short pause, so crossing a gap doesn't flash it in between.
           onPointerOver={(e) => {
+            clearTimeout(leave.current)
             const i = (e.target as HTMLElement).dataset.i
-            setHover(i === undefined ? null : Number(i))
+            if (i !== undefined) setHover(Number(i))
+            else leave.current = window.setTimeout(() => setHover(null), 150)
           }}
-          onPointerLeave={() => setHover(null)}
+          onPointerLeave={() => {
+            clearTimeout(leave.current)
+            setHover(null)
+          }}
         >
           {Array.from(year.levels, (lvl, i) => (
             <span
               key={i}
-              className="day"
+              className={'day' + (i === hover ? ' is-hover' : '')}
               data-i={i}
               data-l={lvl}
               aria-hidden="true"
@@ -131,7 +141,7 @@ export function GitHub() {
   const year = source.years.find((y) => y.year === active) ?? source.years[0]
 
   return (
-    <Screen id="code" link={{ href: `https://github.com/${github.user.login}`, label: 'GitHub' }}>
+    <Screen id="code" links={[{ href: `https://github.com/${github.user.login}`, label: 'GitHub', brand: BRANDS.github }]}>
       <div className="panel">
         <div className="heat-bar">
           {SOURCES.length > 1 && (

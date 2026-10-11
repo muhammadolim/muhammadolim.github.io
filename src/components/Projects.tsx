@@ -1,3 +1,4 @@
+import { BRANDS } from '../data/brands'
 import projects from '../data/projects.json'
 import { Screen } from './Screen'
 
@@ -6,7 +7,7 @@ const BASE = import.meta.env.BASE_URL
 // Early pet projects, kept as a collection. Compact tiles; the whole tile opens the live site.
 export function Projects() {
   return (
-    <Screen id="collection" link={{ href: 'https://github.com/muhammadolim?tab=repositories', label: 'All repositories' }}>
+    <Screen id="collection" links={[{ href: 'https://github.com/muhammadolim?tab=repositories', label: 'All repositories', brand: BRANDS.github }]}>
       <ul className="projects">
         {projects.map((p, i) => (
           <li key={p.slug} style={{ '--i': i } as React.CSSProperties}>

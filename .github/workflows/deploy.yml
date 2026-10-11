@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # rebuild every hour so the GitHub, Steam, Monkeytype, Yandex Music and Claude Code data stays fresh
+  # rebuild every hour so the GitHub, Steam, Monkeytype, Spotify and Claude Code data stays fresh
   # (plus a weekly keep-alive, see the last job)
   schedule:
     - cron: '0 * * * *'
@@ -22,6 +22,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # the Spotify step saves its listening log to the spotify-data branch
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,7 +39,12 @@ jobs:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_ID: ${{ secrets.STEAM_ID }}
       - run: npm run monkeytype
-      - run: npm run yandex
+      - run: npm run spotify
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run claude
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
