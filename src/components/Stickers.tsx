@@ -1,8 +1,10 @@
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useRef, type ReactNode } from 'react'
+import claudeData from '../data/claude.json'
 import github from '../data/github.json'
 import steam from '../data/steam.json'
-import { ClaudeLogo } from './ClaudeLogo'
+import monkeytype from '../data/monkeytype.json'
+import { Logo } from './Logo'
 import { Icon } from './Icon'
 
 const BASE = import.meta.env.BASE_URL
@@ -13,6 +15,7 @@ const compact = (n: number) => Intl.NumberFormat('en-US', { notation: 'compact',
 const dotaGame = steam?.top.find((g) => g.appid === 570)
 const allContributions = github.years.reduce((a, y) => a + y.total, 0)
 const since = new Date(github.user.since).getFullYear()
+const claude = claudeData as { tokens: number; tokensSince: string | null } | null
 
 type Sticker = {
   key: string
@@ -24,6 +27,11 @@ type Sticker = {
 }
 
 const STICKERS: Sticker[] = [
+  {
+    key: 'me', title: 'Muhammad Olim', className: 'sticker-cut sticker-me',
+    body: <img className="sticker-portrait" src={`${BASE}stickers/me.webp`} alt="" draggable={false} />,
+    x: 80, y: 36, r: 4, mx: 66, my: 2,
+  },
   ...(dotaGame
     ? [{
         key: 'hours', title: `${fmt(Math.round(dotaGame.hours))} hours in Dota 2`, className: 'sticker-cut sticker-dota',
@@ -33,7 +41,7 @@ const STICKERS: Sticker[] = [
             <b>{fmt(Math.round(dotaGame.hours))}h</b>
           </>
         ),
-        x: 80, y: 27, r: -8, mx: 72, my: 26,
+        x: 36, y: 46, r: -8, mx: 46, my: -4,
       }]
     : []),
   {
@@ -44,12 +52,29 @@ const STICKERS: Sticker[] = [
         <b>{compact(allContributions)}</b>
       </>
     ),
-    x: 56, y: 52, r: 8, mx: 40, my: 40,
+    x: 50, y: 57, r: 8, mx: 30, my: 46,
   },
   {
-    key: 'claude', title: 'Built with Claude Code', className: 'sticker-cut sticker-claude',
-    body: <ClaudeLogo size={110} />,
-    x: 20, y: 57, r: -6, mx: 4, my: 30,
+    key: 'claude',
+    title: claude?.tokens ? `${fmt(claude.tokens)} tokens with Claude Code since ${claude.tokensSince} (counted with ccusage)` : 'Built with Claude Code',
+    className: 'sticker-cut sticker-claude',
+    body: (
+      <>
+        <Logo name="claude" size={96} />
+        {!!claude?.tokens && <b>{compact(claude.tokens)}</b>}
+      </>
+    ),
+    x: 20, y: 57, r: -6, mx: 2, my: 4,
+  },
+  {
+    key: 'typing', title: `${monkeytype.best.wpm} words per minute on Monkeytype (best ${monkeytype.best.seconds}-second test)`, className: 'sticker-cut sticker-monkeytype',
+    body: (
+      <>
+        <Logo name="monkeytype" size={96} />
+        <b>{monkeytype.best.wpm} wpm</b>
+      </>
+    ),
+    x: 64, y: 45, r: 5, mx: 4, my: 50,
   },
 ]
 

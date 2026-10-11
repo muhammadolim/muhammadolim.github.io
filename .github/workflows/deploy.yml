@@ -3,9 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # rebuild every day so the GitHub numbers stay fresh
+  # rebuild every hour so the GitHub, Steam, Monkeytype, Yandex Music and Claude Code data stays fresh
+  # (plus a weekly keep-alive, see the last job)
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '0 * * * *'
+    - cron: '30 2 * * 1'
   workflow_dispatch:
 
 permissions:
@@ -34,6 +36,11 @@ jobs:
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_ID: ${{ secrets.STEAM_ID }}
+      - run: npm run monkeytype
+      - run: npm run yandex
+      - run: npm run claude
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -47,3 +54,15 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # GitHub switches off scheduled runs after 60 days without new commits. Re-enabling this
+  # workflow once a week resets that clock, so the site keeps refreshing on its own.
+  keepalive:
+    if: github.event.schedule == '30 2 * * 1'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/deploy.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}

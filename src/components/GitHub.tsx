@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import claudeData from '../data/claude.json'
 import github from '../data/github.json'
 import { useInView } from '../lib/useInView'
 import { Screen } from './Screen'
@@ -6,8 +7,57 @@ import { Tabs } from './Tabs'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const fmt = (n: number) => n.toLocaleString('en-US')
+const compact = (n: number) => Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 
-function Heatmap({ year }: { year: (typeof github.years)[number] }) {
+type Year = { year: number; start: string; total: number; levels: string; counts: number[]; tokens?: (number | null)[]; tokensTotal?: number }
+const claude = claudeData as { years: Year[] } | null
+
+// What a heatmap counts, and how its sentences read.
+type Source = {
+  key: 'github' | 'claude'
+  label: string
+  years: Year[]
+  total: (y: Year) => React.ReactNode
+  day: (y: Year, i: number) => React.ReactNode
+}
+const SOURCES: Source[] = [
+  {
+    key: 'github',
+    label: 'GitHub',
+    years: github.years,
+    total: (y) => <><b>{fmt(y.total)}</b> contributions in {y.year}, mostly in private repos</>,
+    day: (y, i) => {
+      const n = y.counts[i]
+      return <><b>{n === 0 ? 'No' : fmt(n)}</b> contribution{n === 1 ? '' : 's'}</>
+    },
+  },
+  ...(claude?.years.length
+    ? [{
+        key: 'claude' as const,
+        label: 'Claude Code',
+        years: claude.years,
+        // heat = messages sent (known since the start); tokens where they were counted
+        total: (y: Year) => (
+          <>
+            <b>{fmt(y.total)}</b> messages to Claude Code in {y.year}
+            {!!y.tokensTotal && <> · <b>{compact(y.tokensTotal)}</b> tokens</>}
+          </>
+        ),
+        day: (y: Year, i: number) => {
+          const n = y.counts[i]
+          const t = y.tokens?.[i]
+          return (
+            <>
+              <b>{n === 0 ? 'No' : fmt(n)}</b> message{n === 1 ? '' : 's'}
+              {t ? <> · <b>{compact(t)}</b> tokens</> : null}
+            </>
+          )
+        },
+      }]
+    : []),
+]
+
+function Heatmap({ year, source }: { year: Year; source: Source }) {
   const [ref, seen] = useInView<HTMLDivElement>()
   const [hover, setHover] = useState<number | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
@@ -31,7 +81,7 @@ function Heatmap({ year }: { year: (typeof github.years)[number] }) {
   const count = hover === null ? null : year.counts[hover]
 
   return (
-    <div className={'heat' + (seen ? ' is-in' : '')} ref={ref}>
+    <div className={'heat' + (seen ? ' is-in' : '')} data-source={source.key} ref={ref}>
       <div className="heat-scroll" ref={scroller}>
         <div className="heat-months" aria-hidden="true">
           {months.map((x) => (
@@ -42,7 +92,7 @@ function Heatmap({ year }: { year: (typeof github.years)[number] }) {
           key={year.year}
           className="heat-grid"
           role="img"
-          aria-label={`${fmt(year.total)} contributions in ${year.year}`}
+          aria-label={`${source.label}: ${fmt(year.total)} in ${year.year}`}
           onPointerOver={(e) => {
             const i = (e.target as HTMLElement).dataset.i
             setHover(i === undefined ? null : Number(i))
@@ -63,11 +113,7 @@ function Heatmap({ year }: { year: (typeof github.years)[number] }) {
       </div>
       <div className="heat-foot">
         <p className="heat-detail" aria-live="polite">
-          {count === null || hover === null ? (
-            <><b>{fmt(year.total)}</b> contributions in {year.year}, mostly in private repos</>
-          ) : (
-            <><b>{count === 0 ? 'No' : fmt(count)}</b> contribution{count === 1 ? '' : 's'} on {date(hover)}</>
-          )}
+          {count === null || hover === null ? source.total(year) : <>{source.day(year, hover)} on {date(hover)}</>}
         </p>
         <div className="heat-legend" aria-hidden="true">
           Less {[0, 1, 2, 3, 4].map((l) => <span key={l} className="day" data-l={l} />)} More
@@ -77,20 +123,29 @@ function Heatmap({ year }: { year: (typeof github.years)[number] }) {
   )
 }
 
+// The "Code" screen: one heatmap card that switches between GitHub contributions and
+// Claude Code tokens, each by year.
 export function GitHub() {
-  const [active, setActive] = useState(github.years[0].year)
-  const year = github.years.find((y) => y.year === active)!
+  const [sourceKey, setSourceKey] = useState<Source['key']>('github')
+  const source = SOURCES.find((s) => s.key === sourceKey)!
+  const [active, setActive] = useState(source.years[0].year)
+  const year = source.years.find((y) => y.year === active) ?? source.years[0]
 
   return (
     <Screen id="code" link={{ href: `https://github.com/${github.user.login}`, label: 'GitHub' }}>
       <div className="panel">
-        <Tabs
-          label="Year"
-          tabs={github.years.map((y) => ({ key: y.year, label: String(y.year), count: y.total }))}
-          active={active}
-          onChange={setActive}
-        />
-        <Heatmap year={year} />
+        <div className="heat-bar">
+          {SOURCES.length > 1 && (
+            <Tabs label="Source" tabs={SOURCES.map((s) => ({ key: s.key, label: s.label }))} active={sourceKey} onChange={setSourceKey} />
+          )}
+          <Tabs
+            label="Year"
+            tabs={source.years.map((y) => ({ key: y.year, label: String(y.year) }))}
+            active={year.year}
+            onChange={setActive}
+          />
+        </div>
+        <Heatmap key={source.key} year={year} source={source} />
       </div>
     </Screen>
   )

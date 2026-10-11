@@ -21,6 +21,8 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-font-smoothing: antialiased; }
+/* touch screens page with native snapping; mouse and trackpad glide in JS (see useStack) */
+@media not ((hover: hover) and (pointer: fine)) { html { scroll-snap-type: y mandatory; } }
 body { margin: 0; background: var(--cream); color: var(--ink); font: 400 18px/1.5 var(--text); }
 h1, h2, h3, p, ul, ol { margin: 0; padding: 0; }
 ul, ol { list-style: none; }
@@ -51,9 +53,14 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
 /* ---------- screens ---------- */
 
 /* stacking deck: each screen sticks, the next slides over it (see useStack) */
+/* invisible snap markers, one per screen: the page settles on whole screens */
+main { position: relative; }
+.snaps { position: absolute; inset: 0 auto auto 0; width: 1px; pointer-events: none; }
+.snaps > div { position: absolute; left: 0; width: 1px; scroll-snap-align: start; scroll-snap-stop: always; }
 .screen {
   position: sticky; top: 0;
-  min-height: 100svh;
+  min-height: 100vh; /* fallback */
+  min-height: 100svh; /* the visible screen with the address bar shown: stable while scrolling */
   display: flex;
   background-color: var(--bg, var(--cream));
   background-image: radial-gradient(rgba(0, 0, 0, 0.13) 1px, transparent 1.4px);
@@ -68,6 +75,8 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
   display: flex; flex-direction: column; justify-content: center; gap: 28px;
   padding: calc(var(--bar) + 16px) 0 40px;
 }
+/* the last screen also holds the footer; a shorter bottom gap keeps it within one screen */
+.screen-inner:has(> .footer) { padding-bottom: 18px; }
 .screen-head { display: flex; align-items: end; gap: 18px; border-bottom: var(--bw) solid var(--ink); padding-bottom: 6px; }
 .screen-num { font: 400 clamp(28px, 3vw, 40px) / 1 var(--display); padding: 6px 10px 2px; background: var(--ink); color: var(--bg); align-self: center; }
 .screen-head h2 { font: 400 clamp(60px, 9vw, 120px) / 0.82 var(--display); padding-top: 0.1em; margin-right: auto; }
@@ -127,8 +136,10 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
 .sticker-cut b { font: 400 36px/0.9 var(--display); letter-spacing: 0.01em; padding-top: 3px; color: var(--ink); }
 .sticker.is-dragging.sticker-cut { filter: drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.25)); }
 .sticker-emblem { width: 92px; pointer-events: none; }
+.sticker-portrait { width: 210px; pointer-events: none; }
 .sticker-github { color: var(--ink); }
 .sticker-claude { color: #d97757; }
+.sticker-monkeytype { color: #e2b714; }
 
 @keyframes slap { from { opacity: 0; scale: 1.5; rotate: calc(var(--r) - 14deg); } }
 
@@ -167,6 +178,13 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
 .day[data-l='2'] { background: #40c463; }
 .day[data-l='3'] { background: #2a9a4b; }
 .day[data-l='4'] { background: #0e5c2b; }
+/* Claude Code tokens: Claude's own orange */
+[data-source='claude'] .day[data-l='1'] { background: #f6d5c6; }
+[data-source='claude'] .day[data-l='2'] { background: #eda98a; }
+[data-source='claude'] .day[data-l='3'] { background: #d97757; }
+[data-source='claude'] .day[data-l='4'] { background: #9c4325; }
+.heat-bar { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-bottom: 20px; }
+.heat-bar .tabs { margin-bottom: 0; }
 .heat-grid .day { animation: pop 450ms var(--ease) both; animation-delay: calc(var(--c) * 9ms); }
 .heat:not(.is-in) .heat-grid .day { animation-play-state: paused; }
 .heat-grid .day:hover { outline: 2px solid var(--ink); outline-offset: 1px; }
@@ -178,16 +196,42 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
 
 /* ---------- play ---------- */
 
-.games-total { color: var(--muted); font-size: 19px; margin-bottom: 18px; }
-.games-total b { color: var(--ink); }
-.games-list { display: grid; gap: 10px; }
+.games-list { display: grid; gap: 10px; margin-top: 14px; }
 .games-list li { display: grid; grid-template-columns: 92px minmax(120px, 220px) 1fr auto; align-items: center; gap: 14px; }
 .games-list img { width: 92px; height: 35px; object-fit: cover; border: 2px solid var(--ink); }
 .game-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 3px; }
 .game-bar { height: 14px; width: max(4px, calc(var(--w) * 100%)); background: var(--ink); transform-origin: left; transition: transform 900ms var(--ease); transition-delay: calc(var(--i) * 70ms); }
 .games:not(.is-in) .game-bar { transform: scaleX(0); }
 .game-hours { font-weight: 600; font-variant-numeric: tabular-nums; padding-top: 3px; min-width: 64px; text-align: right; }
-.games-recent { margin-top: 18px; color: var(--muted); font-size: 15px; }
+.games-recent { color: var(--muted); font-size: 15px; }
+
+.play-grid { display: grid; gap: 20px; }
+/* card titles in Play */
+.card-head { font: 400 26px/1 var(--display); letter-spacing: 0.02em; }
+/* side by side: both cards share one height, and game rows line up with song rows */
+@media (min-width: 1100px) {
+  .play-grid { grid-template-columns: 1fr 1fr; }
+  .games-list { gap: 4px; }
+  .games-list li, .music-song { min-height: 59px; }
+}
+.games, .music { display: flex; flex-direction: column; }
+.games-recent, .music-foot { margin-top: auto; padding-top: 18px; }
+.music-list { display: grid; gap: 4px; margin-top: 14px; }
+.music-song { display: flex; align-items: center; gap: 12px; width: calc(100% + 8px); padding: 4px; margin-inline: -4px; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color 150ms ease-out; }
+.music-song:hover { background: var(--cream); }
+.music-song[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+.music-song[aria-pressed='true'] .music-text span { color: inherit; opacity: 0.7; }
+.music-play { flex: none; display: grid; }
+.music-play > * { grid-area: 1 / 1; }
+.music-play img { width: 44px; height: 44px; object-fit: cover; border: 2px solid var(--ink); }
+.music-icon { display: grid; place-items: center; width: 44px; height: 44px; border: 2px solid var(--ink); background: rgba(0, 0, 0, 0.5); color: #fff; opacity: 0; transition: opacity 150ms ease-out; }
+.music-song:hover .music-icon, .music-song:focus-visible .music-icon, .music-song[aria-pressed='true'] .music-icon { opacity: 1; }
+.music-text { display: grid; min-width: 0; padding-top: 3px; }
+.music-text b, .music-text span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.music-text span { color: var(--muted); font-size: 14px; }
+.music-foot { color: var(--muted); font-size: 15px; }
+.music-foot b { color: var(--ink); }
+.music-foot a { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- footer (inside the last screen) ---------- */
 
@@ -233,16 +277,25 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
   .screen-inner { gap: 20px; padding-bottom: 28px; }
   .screen-head { flex-wrap: wrap; gap: 10px; }
   .screen-head .more { margin-bottom: 4px; }
-  .hero .screen-inner { padding-top: calc(var(--bar) + 6vh); gap: 36px; }
-  .hero-index { grid-template-columns: 1fr; gap: 12px; }
-  .hero-index a { grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; padding: 12px 14px 10px; }
-  .hero-index-title { font-size: 36px; }
+  .hero .screen-inner { padding-top: calc(var(--bar) + 3vh); gap: 20px; }
+  .hero-index { grid-template-columns: 1fr; gap: 10px; }
+  .hero-index a { grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; padding: 9px 14px 7px; }
+  .hero-index-title { font-size: 30px; }
   .hero-index-blurb { grid-column: 2; }
+  /* phones: the stickers get their own strip between the intro text and the section cards,
+     so they can never cover either */
+  .hero-main { order: 0; }
+  .stickers { position: relative; inset: auto; order: 1; height: 172px; }
+  .hero .screen-inner { padding-bottom: 16px; }
+  .hero-index { order: 2; }
+  .hero-name { font-size: 15vw; }
   .sticker { left: var(--mx); top: var(--my); }
-  .sticker-emblem { width: 64px; }
-  .sticker-cut b { font-size: 26px; }
-  .sticker-github .icon { width: 60px; height: 60px; }
-  .sticker-claude svg { width: 76px; height: 76px; }
+  .sticker-emblem { width: 56px; }
+  .sticker-portrait { width: 112px; }
+  .sticker-cut b { font-size: 24px; }
+  .sticker-github .icon { width: 54px; height: 54px; }
+  .sticker-claude svg { width: 64px; height: 64px; }
+  .sticker-monkeytype svg { width: 58px; height: 58px; }
   .projects { gap: 14px; }
   .project-bar { padding: 10px 10px 7px; }
   .project h3 { font-size: 15px; }
@@ -252,5 +305,6 @@ a:active, button:active { scale: 0.97; transition: scale 120ms var(--ease); }
   .tab { flex: none; }
   .games-list li { grid-template-columns: 64px minmax(0, 1fr) auto; row-gap: 6px; }
   .games-list img { width: 64px; height: 24px; }
+  .game-hours { grid-area: 1 / 3; }
   .game-bar { grid-column: 1 / -1; }
 }

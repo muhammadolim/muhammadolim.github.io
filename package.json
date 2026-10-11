@@ -9,13 +9,16 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "github": "node scripts/github.mjs --force",
-    "predev": "node scripts/github.mjs && node scripts/steam.mjs",
-    "prebuild": "node scripts/github.mjs && node scripts/steam.mjs",
-    "steam": "node scripts/steam.mjs --force"
+    "predev": "node scripts/github.mjs && node scripts/steam.mjs && node scripts/monkeytype.mjs && node scripts/yandex.mjs && node scripts/claude.mjs",
+    "prebuild": "node scripts/github.mjs && node scripts/steam.mjs && node scripts/monkeytype.mjs && node scripts/yandex.mjs && node scripts/claude.mjs",
+    "steam": "node scripts/steam.mjs --force",
+    "monkeytype": "node scripts/monkeytype.mjs --force",
+    "yandex": "node scripts/yandex.mjs --force",
+    "claude": "node scripts/claude.mjs --force",
+    "claude:push": "node scripts/claude-push.mjs"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
-    "lenis": "^1.3.26",
     "react": "~19.3",
     "react-dom": "~19.3"
   },

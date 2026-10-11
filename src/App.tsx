@@ -5,6 +5,7 @@ import { Projects } from './components/Projects'
 import { Steam } from './components/Steam'
 import { useStack } from './lib/useStack'
 
+// Section order matches SECTIONS in data/sections.ts.
 export default function App() {
   const active = useStack()
   return (
@@ -12,9 +13,10 @@ export default function App() {
       <Header active={active} />
       <main>
         <Hero />
-        <Projects />
         <GitHub />
         <Steam />
+        <Projects />
+        <div className="snaps" aria-hidden="true" />
       </main>
     </>
   )
