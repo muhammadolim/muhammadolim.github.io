@@ -1,4 +1,4 @@
-# [Portfolio v3](https://muhammadolim.github.io/Portfolio-V3/)
+# [Portfolio v3](https://muhammadolim.github.io/)
 
 `v3 · 2026` · previous: [v2 (2022)](https://github.com/muhammadolim/muhammadolim.github.io), [v1 (2020)](https://github.com/muhammadolim/Portfolio-V1)
 
@@ -8,7 +8,7 @@ Full-screen colored sections that stack as you scroll: Collection (early project
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/Portfolio-V3/
+npm run dev      # http://localhost:5173/
 npm run github   # refresh the GitHub numbers now
 npm run steam    # refresh the Steam numbers now (needs .env.local, see below)
 npm run build    # production build in dist/

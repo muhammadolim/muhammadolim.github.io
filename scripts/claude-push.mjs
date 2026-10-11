@@ -15,7 +15,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const REPO = 'https://github.com/muhammadolim/Portfolio-V3.git'
+const REPO = 'https://github.com/muhammadolim/muhammadolim.github.io.git'
 const BRANCH = 'claude-data'
 const CCUSAGE = 'ccusage@20.0.26'
 const EVERY_MS = 60 * 60 * 1000

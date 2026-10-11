@@ -10,7 +10,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-const REPO = 'muhammadolim/Portfolio-V3'
+const REPO = 'muhammadolim/muhammadolim.github.io'
 const BRANCH = 'claude-data'
 const OUT = new URL('../src/data/claude.json', import.meta.url)
 const MAX_AGE = 12 * 60 * 60 * 1000

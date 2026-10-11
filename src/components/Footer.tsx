@@ -1,6 +1,6 @@
 const VERSIONS = [
   { label: 'v1 · 2020', url: 'https://muhammadolim.github.io/Portfolio-V1/' },
-  { label: 'v2 · 2022', url: 'https://muhammadolim.github.io/' },
+  { label: 'v2 · 2022', url: 'https://muhammadolim.github.io/Portfolio-V2/' },
 ]
 const YEAR = new Date().getFullYear()
 
