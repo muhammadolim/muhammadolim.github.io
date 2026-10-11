@@ -31,15 +31,19 @@ async function preview(title, artist) {
 }
 
 // The newest liked songs that have a preview, so every song in the list can play.
-async function songsWithPreview(liked) {
+// Previews already found last time are reused, so a refresh only searches for new songs.
+async function songsWithPreview(liked, known) {
   const songs = []
   for (const { track, timestamp } of liked.slice(0, SONGS * 4)) {
-    const audio = await preview(track.title, track.artists?.[0]?.name ?? '')
+    const artist = track.artists?.[0]?.name
+    if (!artist) continue // without an artist any search result would "match"
+    const url = track.albums?.[0] ? `${SITE}/album/${track.albums[0].id}/track/${track.id}` : `${SITE}/track/${track.id}`
+    const audio = known.get(url) ?? (await preview(track.title, artist))
     if (!audio) continue
     songs.push({
       title: track.title,
       artists: track.artists.map((a) => a.name).join(', '),
-      url: track.albums?.[0] ? `${SITE}/album/${track.albums[0].id}/track/${track.id}` : `${SITE}/track/${track.id}`,
+      url,
       cover: image(track.coverUri, '100x100'),
       preview: audio,
       liked: timestamp.slice(0, 10),
@@ -63,7 +67,7 @@ async function main() {
     updated: new Date().toISOString(),
     profile: { name: USER, url: `${SITE}/users/${USER}/playlists/${LIKED}` },
     liked: result.trackCount,
-    recent: await songsWithPreview(liked),
+    recent: await songsWithPreview(liked, new Map((saved?.recent ?? []).map((x) => [x.url, x.preview]))),
   }
   await writeFile(OUT, JSON.stringify(out, null, 2) + '\n')
   console.log(`yandex: ${out.liked} liked songs, ${out.recent.length} with previews`)

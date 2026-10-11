@@ -56,7 +56,8 @@ async function main() {
   const level = (n) => (n <= 0 ? 0 : 1 + cut.filter((c) => n > c).length)
 
   const dates = [...messages.keys()].filter((d) => messages.get(d) > 0 || tokens.get(d) > 0).sort()
-  const today = iso(Date.now())
+  // the data's dates are the laptops' local days, which can be ahead of the build's UTC day
+  const today = [iso(Date.now()), dates.at(-1)].sort().at(-1)
   const years = []
   for (let y = Number(today.slice(0, 4)); y >= Number(dates[0].slice(0, 4)); y--) {
     const start = `${y}-01-01`

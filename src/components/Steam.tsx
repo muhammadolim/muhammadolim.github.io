@@ -2,6 +2,7 @@ import steamData from '../data/steam.json'
 import { useInView } from '../lib/useInView'
 import { Music } from './Music'
 import { Screen } from './Screen'
+import { fmt } from '../lib/format'
 
 type Game = { appid: number; name: string; hours: number }
 type SteamData = {
@@ -13,7 +14,6 @@ type SteamData = {
 } | null
 
 const steam = steamData as SteamData
-const fmt = (n: number) => n.toLocaleString('en-US')
 const capsule = (appid: number) => `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/capsule_184x69.jpg`
 
 // Games card (the most played games as bars) next to the music card.

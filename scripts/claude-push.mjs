@@ -9,7 +9,7 @@
 //                                              once an hour
 // The work happens in its own copy of the repo in ~/.cache, never in this folder.
 import { execFileSync, spawn } from 'node:child_process'
-import { existsSync, openSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, openSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -32,6 +32,7 @@ const file = path.join(dir, 'claude', `${machine}.json`)
 if (args.includes('--hook')) {
   const last = existsSync(stamp) ? statSync(stamp).mtimeMs : 0
   if (Date.now() - last > EVERY_MS) {
+    mkdirSync(cache, { recursive: true })
     writeFileSync(stamp, '')
     const log = openSync(path.join(cache, 'portfolio-claude-data.log'), 'a')
     spawn(process.execPath, [fileURLToPath(import.meta.url), machine], { detached: true, stdio: ['ignore', log, log], windowsHide: true }).unref()

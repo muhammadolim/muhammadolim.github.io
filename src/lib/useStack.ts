@@ -73,6 +73,7 @@ export function useStack() {
     let gliding = false
     const glideTo = (target: number) => {
       cancelAnimationFrame(glide)
+      gliding = false
       const from = scrollY
       const distance = target - from
       if (reduced() || Math.abs(distance) < 1) return scrollTo({ top: target, behavior: 'instant' })
@@ -99,6 +100,27 @@ export function useStack() {
       return i > 0 ? starts[i - 1] + Math.max(0, heights[i - 1] - vh) : 0
     }
 
+    // desktop has no CSS snapping: a scroll that didn't come from the wheel or keys (scrollbar
+    // drag, Home/End, find in page) settles on the nearest screen edge once it stops
+    let settleTimer = 0
+    const settle = () => {
+      if (!desktop() || gliding) return
+      const y = scrollY
+      let best = y
+      for (let i = 0; i < starts.length; i++) {
+        const a = starts[i]
+        const b = a + Math.max(0, heights[i] - vh)
+        if (y >= a - 1 && y <= b + 1) return // resting on a screen, or reading a tall one
+        for (const edge of [a, b]) if (Math.abs(edge - y) < Math.abs(best - y) || best === y) best = edge
+      }
+      glideTo(best)
+    }
+    const onScroll = () => {
+      update()
+      clearTimeout(settleTimer)
+      settleTimer = window.setTimeout(settle, 150)
+    }
+
     let lastWheel = 0
     const onWheel = (e: WheelEvent) => {
       if (!desktop() || e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return
@@ -114,6 +136,8 @@ export function useStack() {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
       if (!desktop() || e.altKey || e.ctrlKey || e.metaKey || target.closest('input, textarea, select, [contenteditable]')) return
+      // Space presses a focused button or link; it doesn't scroll then
+      if (e.key === ' ' && target.closest('button, a, [role]')) return
       const dir = e.key === ' ' && e.shiftKey ? -1 : KEYS[e.key]
       if (!dir) return
       e.preventDefault()
@@ -126,7 +150,8 @@ export function useStack() {
       if (i < 0) return
       e.preventDefault()
       history.replaceState(null, '', a!.getAttribute('href'))
-      glideTo(starts[i])
+      if (desktop()) glideTo(starts[i])
+      else scrollTo({ top: starts[i], behavior: reduced() ? 'instant' : 'smooth' })
     }
 
     // screens change size with the window width or their content, not with the address bar
@@ -145,7 +170,9 @@ export function useStack() {
     })
     const main = document.querySelector('main')
     if (main) mo.observe(main, { childList: true })
-    addEventListener('scroll', update, { passive: true })
+    addEventListener('scroll', onScroll, { passive: true })
+    // a window resize can change vh without changing any screen's size
+    addEventListener('resize', measure)
     addEventListener('wheel', onWheel, { passive: false })
     addEventListener('keydown', onKey)
     document.addEventListener('click', onClick)
@@ -159,7 +186,9 @@ export function useStack() {
       ro.disconnect()
       mo.disconnect()
       cancelAnimationFrame(glide)
-      removeEventListener('scroll', update)
+      clearTimeout(settleTimer)
+      removeEventListener('scroll', onScroll)
+      removeEventListener('resize', measure)
       removeEventListener('wheel', onWheel)
       removeEventListener('keydown', onKey)
       document.removeEventListener('click', onClick)

@@ -6,10 +6,9 @@ import steam from '../data/steam.json'
 import monkeytype from '../data/monkeytype.json'
 import { Logo } from './Logo'
 import { Icon } from './Icon'
+import { compact, fmt } from '../lib/format'
 
 const BASE = import.meta.env.BASE_URL
-const fmt = (n: number) => n.toLocaleString('en-US')
-const compact = (n: number) => Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 
 // ---- the numbers behind the stickers (all real data) ----
 const dotaGame = steam?.top.find((g) => g.appid === 570)

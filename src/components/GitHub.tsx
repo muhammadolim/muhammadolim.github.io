@@ -4,10 +4,9 @@ import github from '../data/github.json'
 import { useInView } from '../lib/useInView'
 import { Screen } from './Screen'
 import { Tabs } from './Tabs'
+import { compact, fmt } from '../lib/format'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const fmt = (n: number) => n.toLocaleString('en-US')
-const compact = (n: number) => Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 
 type Year = { year: number; start: string; total: number; levels: string; counts: number[]; tokens?: (number | null)[]; tokensTotal?: number }
 const claude = claudeData as { years: Year[] } | null

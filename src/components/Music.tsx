@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import yandexData from '../data/yandex.json'
+import { fmt } from '../lib/format'
 
 type Song = { title: string; artists: string; url: string; cover: string | null; preview: string; liked: string }
 type YandexData = { profile: { url: string }; liked: number; recent: Song[] } | null
 
 const yandex = yandexData as YandexData
-const fmt = (n: number) => n.toLocaleString('en-US')
 
 // Music card in "Play": songs liked lately on Yandex Music.
 // Tapping a song plays its 30-second preview; tapping it again pauses.
