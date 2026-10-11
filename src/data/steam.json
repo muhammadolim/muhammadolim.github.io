@@ -1,0 +1,49 @@
+{
+  "updated": "2026-10-11T08:24:17.633Z",
+  "profile": {
+    "name": "VΛEL",
+    "url": "https://steamcommunity.com/id/a57r0/",
+    "since": "2020-03-23"
+  },
+  "owned": 10,
+  "hours": 3705.6,
+  "top": [
+    {
+      "appid": 570,
+      "name": "Dota 2",
+      "hours": 3619.4
+    },
+    {
+      "appid": 291550,
+      "name": "Brawlhalla",
+      "hours": 51.2
+    },
+    {
+      "appid": 730,
+      "name": "Counter-Strike 2",
+      "hours": 29.8
+    },
+    {
+      "appid": 550,
+      "name": "Left 4 Dead 2",
+      "hours": 2.8
+    },
+    {
+      "appid": 1815780,
+      "name": "Asphalt Legends",
+      "hours": 1
+    }
+  ],
+  "recent": [
+    {
+      "appid": 570,
+      "name": "Dota 2",
+      "hours": 5.1
+    },
+    {
+      "appid": 730,
+      "name": "Counter-Strike 2",
+      "hours": 2.5
+    }
+  ]
+}
