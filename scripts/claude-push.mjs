@@ -79,7 +79,11 @@ if (!existsSync(path.join(dir, '.git'))) {
   git('config', 'user.name', 'Claude usage')
   git('config', 'user.email', 'muhammadolim@users.noreply.github.com')
 } else {
-  git('pull', '--quiet', '--rebase', 'origin', BRANCH)
+  // The copy is disposable and step 3 rebuilds the file, so match the remote exactly: a run
+  // that died after `git add` or mid-rebase would otherwise block every run after it.
+  if (['rebase-merge', 'rebase-apply'].some((d) => existsSync(path.join(dir, '.git', d)))) git('rebase', '--abort')
+  git('fetch', '--quiet', 'origin', BRANCH)
+  git('reset', '--quiet', '--hard', `origin/${BRANCH}`)
 }
 
 // 3. merge with what was pushed before, so days this laptop no longer has are kept
