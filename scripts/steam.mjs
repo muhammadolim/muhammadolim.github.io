@@ -31,6 +31,17 @@ async function steamId() {
   return r.steamid
 }
 
+// Hours on record shown on the player's public review of a game ("3,619.4 hrs on record"), or 0.
+async function reviewHours(steamid, appid) {
+  try {
+    const res = await fetch(`https://steamcommunity.com/profiles/${steamid}/recommended/${appid}/`)
+    const m = res.ok && (await res.text()).match(/([\d,.]+) hrs on record/)
+    return m ? Number(m[1].replaceAll(',', '')) : 0
+  } catch {
+    return 0
+  }
+}
+
 const hours = (minutes) => Math.round(minutes / 6) / 10
 
 async function main() {
@@ -49,14 +60,16 @@ async function main() {
   ])
   if (!owned.games) throw new Error('game details are private; set them to Public in Steam privacy settings')
 
-  // Free games like Dota 2 can be missing from the owned list but show up in
-  // recently played, with their full play time; merge them in.
+  // Free games like Dota 2 drop out of the owned list once uninstalled, but show up in
+  // recently played (last 2 weeks) with their full play time; merge them in.
   const byId = new Map(owned.games.map((g) => [g.appid, g]))
   for (const g of recent.games ?? []) if (!byId.has(g.appid)) byId.set(g.appid, g)
-  // Once they drop out of recently played (2 weeks), Steam returns them nowhere.
-  // Play time only grows, so keep the last saved hours for any game that went missing.
+  // After that Steam returns them nowhere, so a saved game that went missing takes its
+  // hours from the public review page if there is one, else keeps its last saved hours.
   for (const g of saved?.top ?? []) {
-    if (!byId.has(g.appid)) byId.set(g.appid, { appid: g.appid, name: g.name, playtime_forever: g.hours * 60 })
+    if (byId.has(g.appid)) continue
+    const minutes = (await reviewHours(steamid, g.appid)) * 60 || g.hours * 60
+    byId.set(g.appid, { appid: g.appid, name: g.name, playtime_forever: Math.max(minutes, g.hours * 60) })
   }
   const games = [...byId.values()]
     .filter((g) => g.playtime_forever > 0)
