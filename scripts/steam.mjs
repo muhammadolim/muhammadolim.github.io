@@ -32,10 +32,13 @@ async function steamId() {
 }
 
 // Hours on record shown on the player's public review of a game ("3,619.4 hrs on record"), or 0.
+// Without a review Steam redirects to the games page, which shows other games' hours: skip it.
 async function reviewHours(steamid, appid) {
   try {
-    const res = await fetch(`https://steamcommunity.com/profiles/${steamid}/recommended/${appid}/`)
-    const m = res.ok && (await res.text()).match(/([\d,.]+) hrs on record/)
+    const url = `https://steamcommunity.com/profiles/${steamid}/recommended/${appid}/?l=english`
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) })
+    const html = res.ok ? await res.text() : ''
+    const m = /<title>[^<]*Review for /.test(html) && html.match(/([\d,]+(?:\.\d+)?) hrs on record/)
     return m ? Number(m[1].replaceAll(',', '')) : 0
   } catch {
     return 0
@@ -66,11 +69,11 @@ async function main() {
   for (const g of recent.games ?? []) if (!byId.has(g.appid)) byId.set(g.appid, g)
   // After that Steam returns them nowhere, so a saved game that went missing takes its
   // hours from the public review page if there is one, else keeps its last saved hours.
-  for (const g of saved?.top ?? []) {
-    if (byId.has(g.appid)) continue
-    const minutes = (await reviewHours(steamid, g.appid)) * 60 || g.hours * 60
-    byId.set(g.appid, { appid: g.appid, name: g.name, playtime_forever: Math.max(minutes, g.hours * 60) })
-  }
+  const missing = (saved?.top ?? []).filter((g) => !byId.has(g.appid))
+  const reviewed = await Promise.all(missing.map((g) => reviewHours(steamid, g.appid)))
+  missing.forEach((g, i) => {
+    byId.set(g.appid, { appid: g.appid, name: g.name, playtime_forever: Math.max(reviewed[i], g.hours) * 60 })
+  })
   const games = [...byId.values()]
     .filter((g) => g.playtime_forever > 0)
     .sort((a, b) => b.playtime_forever - a.playtime_forever)
