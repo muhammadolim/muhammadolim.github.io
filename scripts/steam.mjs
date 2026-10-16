@@ -53,6 +53,11 @@ async function main() {
   // recently played, with their full play time; merge them in.
   const byId = new Map(owned.games.map((g) => [g.appid, g]))
   for (const g of recent.games ?? []) if (!byId.has(g.appid)) byId.set(g.appid, g)
+  // Once they drop out of recently played (2 weeks), Steam returns them nowhere.
+  // Play time only grows, so keep the last saved hours for any game that went missing.
+  for (const g of saved?.top ?? []) {
+    if (!byId.has(g.appid)) byId.set(g.appid, { appid: g.appid, name: g.name, playtime_forever: g.hours * 60 })
+  }
   const games = [...byId.values()]
     .filter((g) => g.playtime_forever > 0)
     .sort((a, b) => b.playtime_forever - a.playtime_forever)
