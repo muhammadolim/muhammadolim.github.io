@@ -9,27 +9,27 @@
     {
       "date": "2026-09-26",
       "messages": 352,
-      "tokens": 157153775
+      "tokens": 59433033
     },
     {
       "date": "2026-09-27",
       "messages": 76,
-      "tokens": 49601208
+      "tokens": 11773779
     },
     {
       "date": "2026-09-28",
       "messages": 115,
-      "tokens": 701012376
+      "tokens": 16563921
     },
     {
       "date": "2026-09-29",
       "messages": 183,
-      "tokens": 363938418
+      "tokens": 93399210
     },
     {
       "date": "2026-09-30",
       "messages": 90,
-      "tokens": 358677694
+      "tokens": 337448248
     },
     {
       "date": "2026-10-01",
@@ -168,8 +168,8 @@
     },
     {
       "date": "2026-10-30",
-      "messages": 1,
-      "tokens": 550094
+      "messages": 12,
+      "tokens": 16144592
     }
   ]
 }
