@@ -7,7 +7,7 @@ type SpotifyData = { profile: { url: string }; liked: number; range: string; top
 
 const spotify = spotifyData as SpotifyData
 
-// Music card in "Play": my most played songs on Spotify.
+// Music card: my most played songs on Spotify.
 // Tapping a song plays its 30-second preview; tapping it again pauses.
 export function Music() {
   const audio = useRef<HTMLAudioElement | null>(null)

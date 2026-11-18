@@ -1,9 +1,9 @@
-import steam from './steam.json'
+import spotify from './spotify.json'
 
 // The three screens after the intro, in order. Each has its own background color.
 export const SECTIONS = [
   { id: 'code', title: 'Code', blurb: 'Mostly private work', color: '#00d87e' },
-  ...(steam ? [{ id: 'play', title: 'Play', blurb: 'Games and music', color: '#ff7b5c' }] : []),
+  ...(spotify?.top.length ? [{ id: 'play', title: 'Music', blurb: 'What I listen to', color: '#ff7b5c' }] : []),
   { id: 'collection', title: 'Collection', blurb: 'Early creative work', color: '#ffd84d' },
 ]
 

@@ -205,27 +205,11 @@ main { position: relative; }
 
 /* ---------- play ---------- */
 
-.games-list { display: grid; gap: 10px; margin-top: 14px; }
-.games-list li { display: grid; grid-template-columns: 92px minmax(120px, 220px) 1fr auto; align-items: center; gap: 14px; }
-.games-list img { width: 92px; height: 35px; object-fit: cover; border: 2px solid var(--ink); }
-.game-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 3px; }
-.game-bar { height: 14px; width: max(4px, calc(var(--w) * 100%)); background: var(--ink); transform-origin: left; transition: transform 900ms var(--ease); transition-delay: calc(var(--i) * 70ms); }
-.games:not(.is-in) .game-bar { transform: scaleX(0); }
-.game-hours { font-weight: 600; font-variant-numeric: tabular-nums; padding-top: 3px; min-width: 64px; text-align: right; }
-.games-recent { color: var(--muted); font-size: 15px; }
-
-.play-grid { display: grid; gap: 20px; }
-/* card titles in Play */
+/* card titles */
 .card-head { font: 400 26px/1 var(--display); letter-spacing: 0.02em; }
-/* side by side: both cards share one height, and game rows line up with song rows */
-@media (min-width: 1100px) {
-  .play-grid { grid-template-columns: 1fr 1fr; }
-  .games-list { gap: 4px; }
-  .games-list li, .music-song { min-height: 59px; }
-}
-.games, .music { display: flex; flex-direction: column; }
-.games-recent, .music-foot { margin-top: auto; padding-top: 18px; }
-.music-list { display: grid; gap: 4px; margin-top: 14px; }
+.music { display: flex; flex-direction: column; }
+.music-foot { margin-top: auto; padding-top: 18px; }
+.music-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 4px 24px; margin-top: 14px; }
 .music-song { display: flex; align-items: center; gap: 12px; width: calc(100% + 8px); padding: 4px; margin-inline: -4px; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color 150ms ease-out; }
 .music-song:hover { background: var(--cream); }
 .music-song[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
@@ -266,7 +250,6 @@ main { position: relative; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .screen .screen-head, .screen .panel, .projects li { opacity: 1; transform: none; }
-  .games:not(.is-in) .game-bar { transform: none; }
 }
 
 /* ---------- smaller screens ---------- */
@@ -313,8 +296,4 @@ main { position: relative; }
   .panel { padding: 14px; }
   .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-bottom: 14px; }
   .tab { flex: none; }
-  .games-list li { grid-template-columns: 64px minmax(0, 1fr) auto; row-gap: 6px; }
-  .games-list img { width: 64px; height: 24px; }
-  .game-hours { grid-area: 1 / 3; }
-  .game-bar { grid-column: 1 / -1; }
 }
