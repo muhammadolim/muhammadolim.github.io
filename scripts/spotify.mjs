@@ -1,9 +1,9 @@
-// Fetches my most played songs on Spotify for the music card in "Play" and saves them to
+// Fetches my most played songs on Spotify for the Music section and saves them to
 // src/data/spotify.json. Needs SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET and
 // SPOTIFY_REFRESH_TOKEN (from scripts/spotify-auth.mjs), read from the environment or from
 // .env.local. Without them, or if Spotify can't be reached, the last saved file is kept.
-// Spotify only ranks plays over the last ~6 months ("medium") or ~1 year ("long"); while the
-// 6 months hold too few songs, the year is used. Spotify no longer gives apps song previews,
+// Spotify ranks plays over the last ~4 weeks ("short"), ~6 months ("medium") or ~1 year ("long");
+// the past month is used, and a longer range only while the shorter one holds too few songs. Spotify no longer gives apps song previews,
 // so each song gets a 30-second preview from Apple's public iTunes catalog.
 // Spotify has no "time listened" either, but it shares the last 50 plays (any device), so each
 // hourly build adds the new ones (roughly the time actually played) to a running log on the
@@ -15,11 +15,12 @@ import { readFile, writeFile } from 'node:fs/promises'
 
 const OUT = new URL('../src/data/spotify.json', import.meta.url)
 const MAX_AGE = 12 * 60 * 60 * 1000
-const SONGS = 5
+const SONGS = 10
 const STORES = ['US', 'RU', 'TR', 'DE'] // a song missing in one store is often in another
 const REPO = 'muhammadolim/muhammadolim.github.io'
 const LOG = `https://api.github.com/repos/${REPO}/contents/spotify/listening.json?ref=spotify-data`
 const RANGES = [
+  { key: 'short_term', label: 'past month' },
   { key: 'medium_term', label: 'past 6 months' },
   { key: 'long_term', label: 'past year' },
 ]

@@ -2,7 +2,6 @@ import { faGithub, faSpotify } from '@fortawesome/free-brands-svg-icons'
 import { useRef, type ReactNode } from 'react'
 import claudeData from '../data/claude.json'
 import github from '../data/github.json'
-import steam from '../data/steam.json'
 import monkeytype from '../data/monkeytype.json'
 import spotifyData from '../data/spotify.json'
 import { Logo } from './Logo'
@@ -12,7 +11,6 @@ import { compact, fmt } from '../lib/format'
 const BASE = import.meta.env.BASE_URL
 
 // ---- the numbers behind the stickers (all real data) ----
-const dotaGame = steam?.top.find((g) => g.appid === 570)
 const allContributions = github.years.reduce((a, y) => a + y.total, 0)
 const since = new Date(github.user.since).getFullYear()
 const claude = claudeData as { tokens: number; tokensSince: string | null } | null
@@ -35,18 +33,6 @@ const STICKERS: Sticker[] = [
     body: <img className="sticker-portrait" src={`${BASE}stickers/me.webp`} alt="" draggable={false} />,
     x: 80, y: 36, r: 4, mx: 66, my: 2,
   },
-  ...(dotaGame
-    ? [{
-        key: 'hours', title: `${fmt(Math.round(dotaGame.hours))} hours in Dota 2`, className: 'sticker-cut sticker-dota',
-        body: (
-          <>
-            <img className="sticker-emblem" src={`${BASE}stickers/dota2.webp`} alt="" draggable={false} />
-            <b>{fmt(Math.round(dotaGame.hours))}h</b>
-          </>
-        ),
-        x: 36, y: 46, r: -8, mx: 46, my: -4,
-      }]
-    : []),
   {
     key: 'commits', title: `${fmt(allContributions)} GitHub contributions since ${since}`, className: 'sticker-cut sticker-github',
     body: (
@@ -55,7 +41,7 @@ const STICKERS: Sticker[] = [
         <b>{compact(allContributions)}</b>
       </>
     ),
-    x: 50, y: 57, r: 8, mx: 30, my: 46,
+    x: 38, y: 55, r: 8, mx: 30, my: 46,
   },
   {
     key: 'claude',
@@ -77,7 +63,7 @@ const STICKERS: Sticker[] = [
         <b>{monkeytype.best.wpm} wpm</b>
       </>
     ),
-    x: 64, y: 45, r: 5, mx: 4, my: 50,
+    x: 58, y: 47, r: 5, mx: 4, my: 50,
   },
   ...(listened && listenedHours >= 1
     ? [{

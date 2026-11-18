@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # rebuild every hour so the GitHub, Steam, Monkeytype, Spotify and Claude Code data stays fresh
+  # rebuild every hour so the GitHub, Monkeytype, Spotify and Claude Code data stays fresh
   # (plus a weekly keep-alive, see the last job)
   schedule:
     - cron: '0 * * * *'
@@ -34,10 +34,6 @@ jobs:
       - run: npm run github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm run steam
-        env:
-          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
-          STEAM_ID: ${{ secrets.STEAM_ID }}
       - run: npm run monkeytype
       - run: npm run spotify
         env:
