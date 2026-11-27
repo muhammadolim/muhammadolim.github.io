@@ -69,17 +69,17 @@
     {
       "date": "2026-10-08",
       "messages": 172,
-      "tokens": 155841177
+      "tokens": 155691377
     },
     {
       "date": "2026-10-09",
       "messages": 172,
-      "tokens": 40616873
+      "tokens": 40491789
     },
     {
       "date": "2026-10-10",
       "messages": 127,
-      "tokens": 30084041
+      "tokens": 29738534
     },
     {
       "date": "2026-10-11",
@@ -89,17 +89,17 @@
     {
       "date": "2026-10-12",
       "messages": 131,
-      "tokens": 5963617
+      "tokens": 3833851
     },
     {
       "date": "2026-10-13",
       "messages": 122,
-      "tokens": 9194458
+      "tokens": 1352738
     },
     {
       "date": "2026-10-14",
       "messages": 126,
-      "tokens": 75823126
+      "tokens": 28898602
     },
     {
       "date": "2026-10-15",
@@ -109,12 +109,12 @@
     {
       "date": "2026-10-16",
       "messages": 213,
-      "tokens": 249812309
+      "tokens": 14107106
     },
     {
       "date": "2026-10-17",
       "messages": 260,
-      "tokens": 85810180
+      "tokens": 152158
     },
     {
       "date": "2026-10-18",
@@ -124,47 +124,47 @@
     {
       "date": "2026-10-19",
       "messages": 189,
-      "tokens": 221151417
+      "tokens": 20017058
     },
     {
       "date": "2026-10-20",
       "messages": 79,
-      "tokens": 282555411
+      "tokens": 45710254
     },
     {
       "date": "2026-10-21",
       "messages": 175,
-      "tokens": 215331456
+      "tokens": 109064624
     },
     {
       "date": "2026-10-22",
       "messages": 98,
-      "tokens": 77448258
+      "tokens": 5410568
     },
     {
       "date": "2026-10-23",
       "messages": 105,
-      "tokens": 376388125
+      "tokens": 71645011
     },
     {
       "date": "2026-10-24",
       "messages": 74,
-      "tokens": 131526373
+      "tokens": 129613570
     },
     {
       "date": "2026-10-26",
       "messages": 35,
-      "tokens": 76077816
+      "tokens": 1318728
     },
     {
       "date": "2026-10-27",
       "messages": 143,
-      "tokens": 540056100
+      "tokens": 91869047
     },
     {
       "date": "2026-10-28",
       "messages": 84,
-      "tokens": 355966153
+      "tokens": 240490832
     },
     {
       "date": "2026-10-30",
@@ -303,8 +303,8 @@
     },
     {
       "date": "2026-11-27",
-      "messages": 47,
-      "tokens": 33732784
+      "messages": 60,
+      "tokens": 45583620
     }
   ]
 }
