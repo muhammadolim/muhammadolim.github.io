@@ -298,8 +298,13 @@
     },
     {
       "date": "2026-11-26",
-      "messages": 1,
-      "tokens": 986314
+      "messages": 7,
+      "tokens": 7401383
+    },
+    {
+      "date": "2026-11-27",
+      "messages": 3,
+      "tokens": 2217602
     }
   ]
 }
